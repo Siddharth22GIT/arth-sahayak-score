@@ -1,34 +1,39 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import type { UserProfile } from "@/lib/arthData";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 interface Props {
   language: "en" | "hi";
+  profile: UserProfile;
+  score: number;
 }
 
 const STARTER_PROMPTS_EN = [
-  "Why is my Arth Score 512?",
-  "How do I get to the Strong tier?",
+  "Why is my Arth Score what it is?",
+  "How do I get to the next tier?",
   "Which loan should I pick?",
-  "Should I start another SIP?",
+  "Should I start an SIP?",
 ];
 
 const STARTER_PROMPTS_HI = [
-  "मेरा स्कोर 512 क्यों है?",
-  "Strong tier तक कैसे पहुँचूँ?",
+  "मेरा स्कोर इतना क्यों है?",
+  "अगले tier तक कैसे पहुँचूँ?",
   "कौन सा loan लूँ?",
-  "क्या और SIP शुरू करूँ?",
+  "क्या SIP शुरू करूँ?",
 ];
 
-const WELCOME_EN = "Namaste Ravi 👋 Main Arth hoon — your financial friend. Pucho kuch bhi about your score, loans, ya savings.";
-const WELCOME_HI = "नमस्ते रवि 👋 मैं अर्थ हूँ — आपका financial दोस्त। अपने score, loan या savings के बारे में कुछ भी पूछिए।";
-
-export function AdvisorChat({ language }: Props) {
+export function AdvisorChat({ language, profile, score }: Props) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const firstName = profile.name.trim().split(/\s+/)[0] || "friend";
+  const welcome = language === "hi"
+    ? `नमस्ते ${firstName} 👋 मैं अर्थ हूँ — आपका financial दोस्त। अपने score, loan या savings के बारे में कुछ भी पूछिए।`
+    : `Namaste ${firstName} 👋 Main Arth hoon — your financial friend. Pucho kuch bhi about your score, loans, ya savings.`;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -46,7 +51,7 @@ export function AdvisorChat({ language }: Props) {
       const resp = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next, profile, score }),
       });
 
       if (!resp.ok || !resp.body) {
@@ -105,7 +110,6 @@ export function AdvisorChat({ language }: Props) {
   }
 
   const starters = language === "hi" ? STARTER_PROMPTS_HI : STARTER_PROMPTS_EN;
-  const welcome = language === "hi" ? WELCOME_HI : WELCOME_EN;
 
   return (
     <div className="flex flex-col h-[560px] glass-strong rounded-2xl overflow-hidden">
@@ -119,7 +123,7 @@ export function AdvisorChat({ language }: Props) {
         </div>
         <div className="flex-1">
           <p className="font-bold text-sm">Arth</p>
-          <p className="text-[11px] text-muted-foreground">Your financial friend · Online</p>
+          <p className="text-[11px] text-muted-foreground">Knows your profile · Online</p>
         </div>
         <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-[var(--primary)]/15 text-[var(--primary)] font-semibold">
           AI

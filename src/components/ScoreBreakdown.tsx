@@ -1,13 +1,14 @@
-import { SCORE_SIGNALS } from "@/lib/arthData";
+import type { ScoreSignal } from "@/lib/arthData";
 
 interface Props {
   language: "en" | "hi";
+  signals: ScoreSignal[];
 }
 
-export function ScoreBreakdown({ language }: Props) {
+export function ScoreBreakdown({ language, signals }: Props) {
   return (
     <div className="space-y-3">
-      {SCORE_SIGNALS.map((signal, i) => {
+      {signals.map((signal, i) => {
         const pct = (signal.points / signal.max) * 100;
         const strong = pct >= 70;
         return (
