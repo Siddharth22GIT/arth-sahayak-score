@@ -14,6 +14,7 @@ import {
   computeScore,
   getInitials,
   getTier,
+  matchLoans,
   type UserProfile,
 } from "@/lib/arthData";
 
@@ -43,6 +44,7 @@ function ArthApp() {
       breakdown: computeBreakdown(profile),
       sources: computeDataSources(profile),
       gap: computeNextTierGap(score),
+      loans: matchLoans(score),
     };
   }, [profile]);
 
@@ -73,7 +75,7 @@ function ArthApp() {
     );
   }
 
-  const { score, tier, breakdown, sources, gap } = computed!;
+  const { score, tier, breakdown, sources, gap, loans } = computed!;
   const initials = getInitials(profile.name);
 
   // Personalised next-tier tip
@@ -234,7 +236,7 @@ function ArthApp() {
               <h3 className="font-bold text-lg">Matched for You</h3>
               <p className="text-xs text-muted-foreground">3 loans pre-screened against your Arth Score</p>
             </div>
-            <LoanMatches loans={(computed!.gap.nextTier ? [] : []).length ? [] : []} gap={gap.gap} nextTier={gap.nextTier} tip={tip} />
+            <LoanMatches loans={loans} gap={gap.gap} nextTier={gap.nextTier} tip={tip} />
           </div>
         </section>
 
