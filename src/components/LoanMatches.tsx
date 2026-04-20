@@ -1,10 +1,17 @@
-import { LOAN_MATCHES, NEXT_TIER_GAP } from "@/lib/arthData";
+import type { LoanMatch, ScoreTier } from "@/lib/arthData";
 
-export function LoanMatches() {
+interface Props {
+  loans: LoanMatch[];
+  gap: number;
+  nextTier: ScoreTier | null;
+  tip: string;
+}
+
+export function LoanMatches({ loans, gap, nextTier, tip }: Props) {
   return (
     <div className="space-y-4">
       <div className="space-y-3">
-        {LOAN_MATCHES.map((loan, i) => (
+        {loans.map((loan, i) => (
           <div
             key={loan.lender}
             className="glass rounded-xl p-4 animate-fade-in-up hover:border-[var(--primary)]/40 transition-colors"
@@ -36,24 +43,30 @@ export function LoanMatches() {
       </div>
 
       {/* Motivational nudge */}
-      <div className="relative rounded-xl p-5 overflow-hidden border border-[var(--primary)]/30"
-        style={{ background: "linear-gradient(135deg, oklch(0.22 0.06 200 / 0.6), oklch(0.20 0.04 240 / 0.6))" }}>
-        <div className="absolute inset-0 opacity-30" style={{ background: "var(--gradient-glow)" }} />
-        <div className="relative">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--primary)] font-semibold mb-2">
-            ↑ Next Tier: Strong
-          </p>
-          <h4 className="font-bold text-lg mb-2">You're {NEXT_TIER_GAP} points away</h4>
-          <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-            Increase your average savings balance to ₹5,000+ for 3 months and start one more SIP of ₹500.
-            That alone could push you into the <span className="text-[var(--primary)] font-semibold">Strong</span> tier
-            and unlock loans at <span className="font-mono">11.9% p.a.</span>
-          </p>
-          <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
-            <div className="h-full rounded-full bg-[var(--gradient-primary)] animate-pulse-glow" style={{ width: "62%" }} />
+      {nextTier && (
+        <div className="relative rounded-xl p-5 overflow-hidden border border-[var(--primary)]/30"
+          style={{ background: "linear-gradient(135deg, oklch(0.22 0.06 200 / 0.6), oklch(0.20 0.04 240 / 0.6))" }}>
+          <div className="absolute inset-0 opacity-30" style={{ background: "var(--gradient-glow)" }} />
+          <div className="relative">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--primary)] font-semibold mb-2">
+              ↑ Next Tier: {nextTier}
+            </p>
+            <h4 className="font-bold text-lg mb-2">You're {gap} points away</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed mb-3">{tip}</p>
+            <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+              <div className="h-full rounded-full bg-[var(--gradient-primary)] animate-pulse-glow" style={{ width: `${Math.max(10, 100 - (gap / 200) * 100)}%` }} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {!nextTier && (
+        <div className="rounded-xl p-5 border border-[var(--success)]/40 bg-[var(--success)]/10 text-center">
+          <p className="text-2xl mb-1">🏆</p>
+          <h4 className="font-bold text-lg text-[var(--success)]">You're at the top tier!</h4>
+          <p className="text-xs text-muted-foreground mt-1">Excellent score — premium credit unlocked.</p>
+        </div>
+      )}
     </div>
   );
 }

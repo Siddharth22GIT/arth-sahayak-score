@@ -1,9 +1,13 @@
-import { DATA_SOURCES } from "@/lib/arthData";
+import type { DataSource } from "@/lib/arthData";
 
-export function DataSignals() {
+interface Props {
+  sources: DataSource[];
+}
+
+export function DataSignals({ sources }: Props) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      {DATA_SOURCES.map((src, i) => (
+      {sources.map((src, i) => (
         <div
           key={src.name}
           className="glass rounded-xl p-4 relative overflow-hidden animate-fade-in-up hover:scale-[1.02] transition-transform"
